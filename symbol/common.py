@@ -135,7 +135,7 @@ def multi_layer_feature(body, from_layers, num_filters, strides, pads, min_filte
             layers.append(conv_3x3)
     return layers
 
-def multibox_layer(from_layers, num_classes, sizes=[.2, .95],
+def multibox_layer(from_layers, num_classes, data, sizes=[.2, .95],
                     ratios=[1], normalization=-1, num_channels=[],
                     clip=False, interm_layer=0, steps=[]):
     """
@@ -149,6 +149,8 @@ def multibox_layer(from_layers, num_classes, sizes=[.2, .95],
     num_classes : int
         number of classes excluding background, will automatically handle
         background in this function
+    data : mx.symbol
+        data input layer
     sizes : list or list of list
         [min_size, max_size] for all layers or [[], [], []...] for specific layers
     ratios : list or list of list
@@ -268,7 +270,7 @@ def multibox_layer(from_layers, num_classes, sizes=[.2, .95],
             step = (steps[k], steps[k])
         else:
             step = '(-1.0, -1.0)'
-        anchors = mx.contrib.symbol.MultiBoxPrior(from_layer, sizes=size_str, ratios=ratio_str, \
+        anchors = mx.contrib.symbol.MultiBoxPrior(*[from_layer, data], sizes=size_str, ratios=ratio_str, \
             clip=clip, name="{}_anchors".format(from_name), steps=step)
         anchors = mx.symbol.Flatten(data=anchors)
         anchor_layers.append(anchors)

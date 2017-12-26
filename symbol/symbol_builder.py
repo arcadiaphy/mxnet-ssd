@@ -65,11 +65,12 @@ def get_symbol_train(network, num_classes, from_layers, num_filters, strides, pa
     """
     label = mx.sym.Variable('label')
     body = import_module(network).get_symbol(num_classes=num_classes, **kwargs)
+    data = body.get_internals()['data']
     layers = multi_layer_feature(body, from_layers, num_filters, strides, pads,
         min_filter=min_filter)
 
     loc_preds, cls_preds, anchor_boxes = multibox_layer(layers, \
-        num_classes, sizes=sizes, ratios=ratios, normalization=normalizations, \
+        num_classes, data, sizes=sizes, ratios=ratios, normalization=normalizations, \
         num_channels=num_filters, clip=False, interm_layer=0, steps=steps)
 
     tmp = mx.contrib.symbol.MultiBoxTarget(
@@ -153,11 +154,12 @@ def get_symbol(network, num_classes, from_layers, num_filters, sizes, ratios,
 
     """
     body = import_module(network).get_symbol(num_classes=num_classes, **kwargs)
+    data = body.get_internals()['data']
     layers = multi_layer_feature(body, from_layers, num_filters, strides, pads,
         min_filter=min_filter)
 
     loc_preds, cls_preds, anchor_boxes = multibox_layer(layers, \
-        num_classes, sizes=sizes, ratios=ratios, normalization=normalizations, \
+        num_classes, data, sizes=sizes, ratios=ratios, normalization=normalizations, \
         num_channels=num_filters, clip=False, interm_layer=0, steps=steps)
 
     cls_prob = mx.symbol.SoftmaxActivation(data=cls_preds, mode='channel', \
