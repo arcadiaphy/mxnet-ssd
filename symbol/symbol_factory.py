@@ -65,8 +65,7 @@ def get_config(network, data_shape, **kwargs):
             ratios = [[1,2,.5], [1,2,.5,3,1./3], [1,2,.5,3,1./3], [1,2,.5,3,1./3], \
                 [1,2,.5,3,1./3], [1,2,.5], [1,2,.5]]
             normalizations = [20, -1, -1, -1, -1, -1, -1]
-            steps = [] if data_shape != 512 else [x / 512.0 for x in
-                [8, 16, 32, 64, 128, 256, 512]]
+            steps = []
         else:
             from_layers = ['relu4_3', 'relu7', '', '', '', '']
             num_filters = [512, -1, 512, 256, 256, 256]
@@ -76,7 +75,7 @@ def get_config(network, data_shape, **kwargs):
             ratios = [[1,2,.5], [1,2,.5,3,1./3], [1,2,.5,3,1./3], [1,2,.5,3,1./3], \
                 [1,2,.5], [1,2,.5]]
             normalizations = [20, -1, -1, -1, -1, -1]
-            steps = [] if data_shape != 300 else [x / 300.0 for x in [8, 16, 32, 64, 100, 300]]
+            steps = []
         if not (data_shape == 300 or data_shape == 512):
             logging.warn('data_shape %d was not tested, use with caucious.' % data_shape)
         return locals()

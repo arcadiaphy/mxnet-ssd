@@ -1,7 +1,8 @@
 from __future__ import absolute_import
 import mxnet as mx
-from .common import legacy_conv_act_layer
-from .common import multibox_layer
+import numpy as np
+from common import legacy_conv_act_layer
+from common import multibox_layer
 
 def get_symbol_train(num_classes=20, nms_thresh=0.5, force_suppress=False,
                      nms_topk=400, **kwargs):
@@ -118,14 +119,15 @@ def get_symbol_train(num_classes=20, nms_thresh=0.5, force_suppress=False,
     # specific parameters for VGG16 network
     from_layers = [relu4_3, relu7, relu8_2, relu9_2, relu10_2, relu11_2]
     sizes = [[.1, .141], [.2,.272], [.37, .447], [.54, .619], [.71, .79], [.88, .961]]
+    sizes = np.array(sizes) * 300
     ratios = [[1,2,.5], [1,2,.5,3,1./3], [1,2,.5,3,1./3], [1,2,.5,3,1./3], \
         [1,2,.5], [1,2,.5]]
     normalizations = [20, -1, -1, -1, -1, -1]
-    steps = [ x / 300.0 for x in [8, 16, 32, 64, 100, 300]]
+    steps = []
     num_channels = [512]
 
     loc_preds, cls_preds, anchor_boxes = multibox_layer(from_layers, \
-        num_classes, sizes=sizes, ratios=ratios, normalization=normalizations, \
+        num_classes, data, sizes=sizes, ratios=ratios, normalization=normalizations, \
         num_channels=num_channels, clip=False, interm_layer=0, steps=steps)
 
     tmp = mx.contrib.symbol.MultiBoxTarget(
